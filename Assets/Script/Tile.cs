@@ -11,10 +11,10 @@ public class Tile  {
 	public enum talajfajta {föld, üres, vas};
 	talajfajta eztalajfajta;
 
-	public Tile(int x, int y, GameObject go){
+	public Tile(int x, int y){
 		TileX = x;
 		TileY = y;
-		TileGO = go;
+
 	}
 
 }

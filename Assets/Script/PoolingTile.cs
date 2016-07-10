@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MouseManager : MonoBehaviour {
-	
+public class PoolingTile : MonoBehaviour {
+	public int TileX;
+	public int TileY;
+	public Tile myTile;
+
+
 	// Use this for initialization
 	void Start () {
 	
