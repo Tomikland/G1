@@ -25,7 +25,7 @@ public class CameraMove : MonoBehaviour {
 
 		transform.position = menniri; 
 
-		Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize + -Input.GetAxis ("Mouse ScrollWheel") * gsebi * Time.deltaTime*Mathf.Pow(Camera.main.orthographicSize,2),1,10);
+		Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize + -Input.GetAxis ("Mouse ScrollWheel") * gsebi * Time.deltaTime*Mathf.Pow(Camera.main.orthographicSize,2),2,6);
 	}
 
 }
