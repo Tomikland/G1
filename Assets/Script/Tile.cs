@@ -11,8 +11,8 @@ public class Tile  {
 
 	public GameObject TileGO;
 	public bool lathato = false;
-	public enum talajfajta {föld, üres, vas};
-	talajfajta eztalajfajta;
+	public enum talajfajta {kő, föld, üres, vas, fű};
+	public talajfajta eztalajfajta;
 
 	public Tile(int x, int y){
 		TileX = x;

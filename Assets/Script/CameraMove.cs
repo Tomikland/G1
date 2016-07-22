@@ -11,7 +11,7 @@ public class CameraMove : MonoBehaviour {
 
 	void Start () {
 		tScript = tilesGO.GetComponent<Tiles> ();
-		transform.position = new Vector3 (tScript.MapX / 2 - 0.5f, tScript.MapY / 2 - 0.5f, -5);
+		transform.position = new Vector3 (tScript.MapX / 2 - 0.5f, tScript.MapY - 0.5f, -5);
 
 	}
 	
@@ -25,7 +25,7 @@ public class CameraMove : MonoBehaviour {
 
 		transform.position = menniri; 
 
-		Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize + -Input.GetAxis ("Mouse ScrollWheel") * gsebi * Time.deltaTime*Mathf.Pow(Camera.main.orthographicSize,2),2,6);
+		Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize + -Input.GetAxis ("Mouse ScrollWheel") * gsebi * Time.deltaTime*Mathf.Pow(Camera.main.orthographicSize,2),3,8);
 	}
 
 }

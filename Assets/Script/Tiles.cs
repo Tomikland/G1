@@ -6,16 +6,24 @@ public  class Tiles : MonoBehaviour {
 	public int MapX = 10;
 	public int MapY = 10;
 	public Tile[,] ossztile;
+	public int földMax = 3;
 	// Use this for initialization
 	void Start () {
-		//GameObject go;
+		Tile t;
+
 		ossztile = new Tile[MapX, MapY];
 		for (int x = 0; x < MapX; x++) {
 			for (int y = 0; y < MapY; y++) {
 				/*go = (GameObject)Instantiate (tilePrefab, new Vector3 (x, y,0),Quaternion.identity);
 				go.transform.parent = gameObject.transform;
 				go.name = "Tile_" + x+"_" + y; */
-				ossztile [x, y] = new Tile (x, y);
+				t = ossztile [x, y] = new Tile (x, y);
+				if (y >= MapY - földMax) {
+					t.eztalajfajta = Tile.talajfajta.föld;
+				}
+				if (y == MapY-1 ){
+					t.eztalajfajta = Tile.talajfajta.fű;
+				}
 			}
 		}
 	}

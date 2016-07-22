@@ -16,12 +16,24 @@ public class MouseManager : MonoBehaviour {
 		float posX;
 		float PosY;
 		if (Input.GetMouseButtonDown (0)) {
-			Debug.Log ("Running");
+			
 			WorldMousePos = Camera.main.ScreenToWorldPoint (new Vector3(Input.mousePosition.x, Input.mousePosition.y ,0));
 			posX = WorldMousePos.x;
 			PosY = WorldMousePos.y;
-			Debug.Log (GetTileAtWorldCoord (posX,PosY).TileGO.name);
+			Tile theTile = GetTileAtWorldCoord (posX, PosY);
+			if(theTile != null){
+			Debug.Log ("Találtam egy négyzetet : "+theTile.TileX+"_"+theTile.TileY);
+
+				if (theTile.TileGO != null) {
+					//SpriteRenderer Spr = theTile.TileGO.GetComponentInChildren<SpriteRenderer> ();
+					//Spr.color = Color.blue;
+
+				} 
+			}else {
+				Debug.Log ("ott nincs is négyzet!");
+				
 		}
+	}
 	}
 	public Tile GetTileAtWorldCoord (float x, float y){
 		Tile theTile;
@@ -30,9 +42,14 @@ public class MouseManager : MonoBehaviour {
 
 		TileX = Mathf.RoundToInt (x);
 		TileY = Mathf.RoundToInt (y);
+		if (TileX>0 && TileX<TilesScript.MapX && TileY>0 && TileY<TilesScript.MapY){
 
 		theTile = TilesScript.ossztile [TileX, TileY];
 		return theTile;
 
-	}
+		}else{
+			return null;
+		}
+
+}
 }

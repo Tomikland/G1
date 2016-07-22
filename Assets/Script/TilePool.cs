@@ -20,6 +20,9 @@ public class TilePool : MonoBehaviour {
 	float time;
 	public float Interval = 5f;
 	public int CameraPoolSize;
+	public Sprite kőSprite;
+	public Sprite földSprite;
+	public Sprite fűSprite;
 	//public Tile oldTile;
 	// Use this for initialization
 	void Start () {
@@ -28,45 +31,52 @@ public class TilePool : MonoBehaviour {
 		Mm = MmGO.GetComponent<MouseManager> ();
 
 
-		GeneratePoolTile (200);
+		GeneratePoolTile (250);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		if (time > Interval){
+		Tile currLoopTile;
+		if (time >= Interval){
 			time = 0f;
-
-		CurrSeenTiles.Clear (); 
-		TileBelowCam = Mm.GetTileAtWorldCoord (Camera.main.transform.position.x, Camera.main.transform.position.y);
-	    TileBelowCamX = TileBelowCam.TileX;
-		TileBelowCamY = TileBelowCam.TileY;
-
-		CameraPoolSize = Mathf.RoundToInt (Camera.main.orthographicSize* cameraPoolSizeMultiplier);
-		for (int x = TileBelowCamX - CameraPoolSize; x < TileBelowCamX + CameraPoolSize; x++) {
-			for (int y = TileBelowCamY - CameraPoolSize; y < TileBelowCamY + CameraPoolSize; y++) {
-				if(x >= 0 && x < TilesScript.MapX  &&  y >= 0 && y < TilesScript.MapY){
-					
-					CurrSeenTiles.Add (TilesScript.ossztile [x, y]);
-
-					if(AssignedTiles.Contains(TilesScript.ossztile [x, y]) == false){
-						//Debug.Log ("Assigning tile");
-							if (AssignPoolTileToTile (x, y)) {
-								AssignedTiles.Add (TilesScript.ossztile [x, y]); 
-
-							} else {
-								GeneratePoolTile (5);
-							}
-					}
+			foreach (GameObject GO in AllPoolTiles) {
+				PoolingTile GOScript = GO.GetComponent<PoolingTile> ();
+				if(CurrSeenTiles.Contains(GOScript.myTile) == false && PendingPoolTiles.Contains(GO) == false){
+					ReturnTileToPool (GO, GOScript);
 				}
 			}
-		  }
-		foreach (GameObject GO in AllPoolTiles) {
-			PoolingTile GOScript = GO.GetComponent<PoolingTile> ();
-				if(CurrSeenTiles.Contains(GOScript.myTile) == false && PendingPoolTiles.Contains(GO) == false){
-				ReturnTileToPool (GO, GOScript);
+		
+		TileBelowCam = Mm.GetTileAtWorldCoord (Camera.main.transform.position.x, Camera.main.transform.position.y);
+			if (TileBelowCam != null) {
+				TileBelowCamX = TileBelowCam.TileX;
+				TileBelowCamY = TileBelowCam.TileY;
+				CurrSeenTiles.Clear (); 
+				CameraPoolSize = Mathf.RoundToInt (Camera.main.orthographicSize * cameraPoolSizeMultiplier);
+				for (int x = TileBelowCamX - CameraPoolSize; x < TileBelowCamX + CameraPoolSize; x++) {
+					for (int y = TileBelowCamY - CameraPoolSize; y < TileBelowCamY + CameraPoolSize; y++) {
+						if (x >= 0 && x < TilesScript.MapX && y >= 0 && y < TilesScript.MapY) {
+							currLoopTile = TilesScript.ossztile [x, y];
+					
+							CurrSeenTiles.Add (currLoopTile);
+							if(currLoopTile.TileGO != null && PendingPoolTiles.Contains(currLoopTile.TileGO)){
+							PendingPoolTiles.Remove (currLoopTile.TileGO);
+							}
+							if (AssignedTiles.Contains (currLoopTile) == false) {
+								//Debug.Log ("Assigning tile");
+								if (AssignPoolTileToTile (x, y)) {
+									AssignedTiles.Add (currLoopTile); 
+
+								} else {
+									GeneratePoolTile (5);
+								}
+							}
+						}
+					}
+				}
+
 			}
-		}
+		
 
 		}
 		time += Time.deltaTime;
@@ -77,21 +87,30 @@ public class TilePool : MonoBehaviour {
 		PoolingTile PTScript;
 		//Tile DataTile;
 		Vector3 tilePos;
-		bool WasSuccesful = true;
 		if(PendingPoolTiles.Count == 0){
-			WasSuccesful = false;
+			
 			return false;
 		}
 		poolTile = PendingPoolTiles [0];
 		PTScript = poolTile.GetComponent<PoolingTile> ();
+		oldTile = PTScript.myTile;
+		PendingPoolTiles.Remove (poolTile);
 
-
-		if (PTScript.myTile != null && PTScript.myTile != TilesScript.ossztile[x,y]) {
+		if (PTScript.myTile != null) {
 			oldTile = PTScript.myTile;
-			AssignedTiles.Remove (oldTile);
-		}
-		PendingPoolTiles.Remove(poolTile);
+			if (oldTile == TilesScript.ossztile [x, y]) {
+				return true;
 
+
+
+			} 
+			else{
+				AssignedTiles.Remove (oldTile);
+			}
+		}
+
+			
+		
 
 		tilePos = new Vector3 (x, y, 0);
 		PTScript.TileX = x;
@@ -100,9 +119,10 @@ public class TilePool : MonoBehaviour {
 		PTScript.myTile = TilesScript.ossztile[x,y];
 		PTScript.myTile.TileGO = poolTile;
 		PTScript.isAssigned = true;
+		poolTile.GetComponentInChildren<SpriteRenderer> ().sprite = GetSpriteForTile (poolTile, PTScript);
 		return true;
-	}
 
+	}
 	void GeneratePoolTile (int amt){
 		GameObject GO;
 		PoolingTile Script;
@@ -125,6 +145,18 @@ public class TilePool : MonoBehaviour {
 
 
 	
+	}
+	Sprite GetSpriteForTile(GameObject t, PoolingTile scr){
+		if (scr.myTile.eztalajfajta == Tile.talajfajta.kő) {
+			return kőSprite;
+		} else if (scr.myTile.eztalajfajta == Tile.talajfajta.föld) {
+			return földSprite;
+		} else if (scr.myTile.eztalajfajta == Tile.talajfajta.fű) {
+			return fűSprite;
+		} else {
+			Debug.LogError ("GetSpriteForTile");
+			return kőSprite;
+		}
 	}
 
 
